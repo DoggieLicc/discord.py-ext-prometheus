@@ -119,12 +119,12 @@ class PrometheusCog(commands.Cog):
     async def on_interaction(self, interaction: Interaction):
         shard_id = interaction.guild.shard_id if interaction.guild else None
 
-        # command name can be None if comming from a view (like a button click) or a modal
+        if interaction.type is not InteractionType.application_command:
+            return
+
+        # command name can be None if coming from a view (like a button click) or a modal
         command_name = None
-        if (
-            interaction.type == InteractionType.application_command
-            and interaction.command
-        ):
+        if interaction.command:
             if isinstance(interaction.command, Command):
                 # Slash Command
                 command_name = ""
