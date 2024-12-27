@@ -48,15 +48,22 @@ class PrometheusCog(commands.Cog):
     using the `on_ready` listener.
     """
 
-    def __init__(self, bot: commands.Bot, port: int = 8000):
+    def __init__(
+            self,
+            bot: commands.Bot,
+            port: int = 8000,
+            ignore_text_commands = False
+    ):
         """
         Parameters:
                 bot: The Discord bot
                 port: The port for the Prometheus server
+                ignore_text_commands: If True, text commands will not be counted in the COMMANDS_GAUGE
         """
 
         self.bot = bot
         self.port = port
+        self.ignore_text_commands = ignore_text_commands
 
         self.started = False
 
@@ -112,6 +119,9 @@ class PrometheusCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command(self, ctx: commands.Context):
+        if self.ignore_text_commands:
+            return
+
         shard_id = ctx.guild.shard_id if ctx.guild else None
         ON_COMMAND_COUNTER.labels(shard_id, ctx.command.name).inc()
 
