@@ -1,12 +1,15 @@
+import os
 import logging
+
 from prometheus_client import start_http_server, Counter, Gauge
 from discord.ext import commands, tasks
 from discord import Interaction, InteractionType, AutoShardedClient
 from discord.app_commands.commands import Command
+from discord.ext.commands.bot import BotBase
 
 log = logging.getLogger("prometheus")
 
-METRIC_PREFIX = "discord_"
+METRIC_PREFIX = os.getenv('PROMETHEUS_PREFIX') or "discord_"
 
 CONNECTION_GAUGE = Gauge(
     METRIC_PREFIX + "connected",
@@ -50,7 +53,7 @@ class PrometheusCog(commands.Cog):
 
     def __init__(
             self,
-            bot: commands.Bot,
+            bot: BotBase,
             port: int = 8000,
             ignore_text_commands = False
     ):
